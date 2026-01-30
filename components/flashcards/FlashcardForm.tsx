@@ -2,175 +2,163 @@ import { tokens } from "@/constants/designTokens";
 import React, { useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
-type FlashcardFormPayload = {
+type FlashcardPayload = {
   question: string;
   answer: string;
   imageUri?: string | null;
 };
 
 type Props = {
-  onSubmit: (payload: FlashcardFormPayload) => void;
+  onSubmit: (payload: FlashcardPayload) => void;
 };
 
 export function FlashcardForm({ onSubmit }: Props) {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [imageUri, setImageUri] = useState<string | null>(null);
 
   const canSave = useMemo(() => {
-    return question.trim().length >= 3 && answer.trim().length >= 3;
+    return question.trim().length > 0 && answer.trim().length > 0;
   }, [question, answer]);
 
-  function handlePickImagePlaceholder() {
-    // Placeholder (sem galeria ainda)
-    setImageUri("placeholder://image");
-  }
-
-  function handleRemoveImage() {
-    setImageUri(null);
-  }
-
-  function handleSubmit() {
+  function handleSave() {
     if (!canSave) return;
-    onSubmit({ question: question.trim(), answer: answer.trim(), imageUri });
+
+    onSubmit({
+      question: question.trim(),
+      answer: answer.trim(),
+      imageUri: null,
+    });
+
+    // limpa o form após salvar (mock)
     setQuestion("");
     setAnswer("");
-    setImageUri(null);
   }
 
   return (
     <View style={{ gap: tokens.spacing.md }}>
-      <Field label="Question">
+      <View style={{ gap: tokens.spacing.xs }}>
+        <Text
+          style={{
+            color: tokens.colors.muted,
+            fontFamily: tokens.typography.family.base,
+            fontSize: tokens.typography.size.sm,
+          }}
+        >
+          Question
+        </Text>
+
         <TextInput
           value={question}
           onChangeText={setQuestion}
           placeholder="Type the question..."
           placeholderTextColor={tokens.colors.muted}
-          style={inputStyle}
-          multiline
+          style={{
+            backgroundColor: "rgba(255,255,255,0.04)",
+            borderColor: tokens.colors.border,
+            borderWidth: 1,
+            borderRadius: tokens.radius.md,
+            paddingHorizontal: tokens.spacing.md,
+            paddingVertical: tokens.spacing.sm,
+            color: tokens.colors.text,
+            fontFamily: tokens.typography.family.base,
+            fontSize: tokens.typography.size.md,
+          }}
         />
-      </Field>
+      </View>
 
-      <Field label="Answer">
+      <View style={{ gap: tokens.spacing.xs }}>
+        <Text
+          style={{
+            color: tokens.colors.muted,
+            fontFamily: tokens.typography.family.base,
+            fontSize: tokens.typography.size.sm,
+          }}
+        >
+          Answer
+        </Text>
+
         <TextInput
           value={answer}
           onChangeText={setAnswer}
           placeholder="Type the answer..."
           placeholderTextColor={tokens.colors.muted}
-          style={[inputStyle, { minHeight: 110 }]}
           multiline
+          style={{
+            backgroundColor: "rgba(255,255,255,0.04)",
+            borderColor: tokens.colors.border,
+            borderWidth: 1,
+            borderRadius: tokens.radius.md,
+            paddingHorizontal: tokens.spacing.md,
+            paddingVertical: tokens.spacing.sm,
+            minHeight: 120,
+            textAlignVertical: "top",
+            color: tokens.colors.text,
+            fontFamily: tokens.typography.family.base,
+            fontSize: tokens.typography.size.md,
+          }}
         />
-      </Field>
+      </View>
 
-      <Field label="Optional Image">
-        <View style={{ gap: tokens.spacing.sm }}>
-          <View style={imageBoxStyle}>
-            <Text
-              style={{
-                color: tokens.colors.muted,
-                fontFamily: tokens.typography.family.base,
-              }}
-            >
-              {imageUri ? "Image selected (placeholder)" : "No image selected"}
-            </Text>
-          </View>
-
-          <View style={{ flexDirection: "row", gap: tokens.spacing.sm }}>
-            <Pressable
-              onPress={handlePickImagePlaceholder}
-              style={secondaryBtnStyle}
-            >
-              <Text style={secondaryBtnText}>Choose Image</Text>
-            </Pressable>
-
-            <Pressable onPress={handleRemoveImage} style={secondaryBtnStyle}>
-              <Text style={secondaryBtnText}>Remove</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Field>
-
+      {/* Placeholder (sem função por enquanto) */}
       <Pressable
-        onPress={handleSubmit}
-        disabled={!canSave}
-        style={[primaryBtnStyle, { opacity: canSave ? 1 : 0.45 }]}
-      >
-        <Text style={primaryBtnText}>Save Flashcard</Text>
-      </Pressable>
-    </View>
-  );
-}
-
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <View style={{ gap: 8 }}>
-      <Text
+        onPress={() => {}}
         style={{
-          color: tokens.colors.muted,
-          fontSize: tokens.typography.size.sm,
-          fontFamily: tokens.typography.family.base,
+          borderColor: tokens.colors.border,
+          borderWidth: 1,
+          borderStyle: "dashed",
+          borderRadius: tokens.radius.md,
+          padding: tokens.spacing.md,
         }}
       >
-        {label}
-      </Text>
-      {children}
+        <Text
+          style={{
+            color: tokens.colors.muted,
+            fontFamily: tokens.typography.family.base,
+            fontSize: tokens.typography.size.md,
+            textAlign: "center",
+          }}
+        >
+          + Add image (later)
+        </Text>
+      </Pressable>
+
+      <Pressable
+        onPress={handleSave}
+        disabled={!canSave}
+        style={({ pressed }) => ({
+          backgroundColor: canSave
+            ? tokens.colors.primary
+            : "rgba(139, 92, 246, 0.35)",
+          borderRadius: tokens.radius.lg,
+          paddingVertical: tokens.spacing.md,
+          paddingHorizontal: tokens.spacing.lg,
+          opacity: pressed ? 0.9 : 1,
+        })}
+      >
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontFamily: tokens.typography.family.base,
+            fontSize: tokens.typography.size.md,
+            textAlign: "center",
+          }}
+        >
+          Save Flashcard
+        </Text>
+      </Pressable>
+
+      {!canSave ? (
+        <Text
+          style={{
+            color: tokens.colors.muted,
+            fontFamily: tokens.typography.family.base,
+            fontSize: tokens.typography.size.sm,
+            textAlign: "center",
+          }}
+        >
+          Fill in both fields to enable saving.
+        </Text>
+      ) : null}
     </View>
   );
 }
-
-const inputStyle = {
-  backgroundColor: "rgba(255,255,255,0.03)",
-  borderWidth: 1,
-  borderColor: tokens.colors.border,
-  borderRadius: tokens.radius.md,
-  padding: tokens.spacing.md,
-  color: tokens.colors.text,
-  fontFamily: tokens.typography.family.base,
-  fontSize: tokens.typography.size.md,
-  minHeight: 60,
-} as const;
-
-const imageBoxStyle = {
-  height: 92,
-  borderRadius: tokens.radius.md,
-  borderWidth: 1,
-  borderColor: tokens.colors.border,
-  backgroundColor: "rgba(255,255,255,0.03)",
-  alignItems: "center",
-  justifyContent: "center",
-} as const;
-
-const primaryBtnStyle = {
-  marginTop: tokens.spacing.sm,
-  backgroundColor: tokens.colors.primary,
-  paddingVertical: 14,
-  borderRadius: tokens.radius.md,
-  alignItems: "center",
-} as const;
-
-const primaryBtnText = {
-  color: tokens.colors.text,
-  fontFamily: tokens.typography.family.base,
-  fontSize: tokens.typography.size.md,
-} as const;
-
-const secondaryBtnStyle = {
-  flex: 1,
-  borderWidth: 1,
-  borderColor: tokens.colors.border,
-  borderRadius: tokens.radius.md,
-  paddingVertical: 12,
-  alignItems: "center",
-} as const;
-
-const secondaryBtnText = {
-  color: tokens.colors.text,
-  fontFamily: tokens.typography.family.base,
-  fontSize: tokens.typography.size.sm,
-} as const;
