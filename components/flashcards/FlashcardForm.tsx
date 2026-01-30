@@ -1,164 +1,103 @@
 import { tokens } from "@/constants/designTokens";
-import React, { useMemo, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
-
-type FlashcardPayload = {
-  question: string;
-  answer: string;
-  imageUri?: string | null;
-};
+import React, { useState } from "react";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type Props = {
-  onSubmit: (payload: FlashcardPayload) => void;
+  onSubmit: (payload: {
+    question: string;
+    answer: string;
+    imageUri?: string | null;
+  }) => void;
 };
 
 export function FlashcardForm({ onSubmit }: Props) {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
-  const canSave = useMemo(() => {
-    return question.trim().length > 0 && answer.trim().length > 0;
-  }, [question, answer]);
+  const hasError = submitted && (!question.trim() || !answer.trim());
 
-  function handleSave() {
-    if (!canSave) return;
+  function handleSubmit() {
+    setSubmitted(true);
+
+    if (!question.trim() || !answer.trim()) return;
 
     onSubmit({
       question: question.trim(),
       answer: answer.trim(),
-      imageUri: null,
     });
 
-    // limpa o form após salvar (mock)
     setQuestion("");
     setAnswer("");
+    setSubmitted(false);
   }
 
   return (
     <View style={{ gap: tokens.spacing.md }}>
-      <View style={{ gap: tokens.spacing.xs }}>
-        <Text
-          style={{
-            color: tokens.colors.muted,
-            fontFamily: tokens.typography.family.base,
-            fontSize: tokens.typography.size.sm,
-          }}
-        >
+      {/* Question */}
+      <View>
+        <Text style={{ color: tokens.colors.muted, marginBottom: 6 }}>
           Question
         </Text>
-
         <TextInput
           value={question}
           onChangeText={setQuestion}
-          placeholder="Type the question..."
+          placeholder="Type the question"
           placeholderTextColor={tokens.colors.muted}
           style={{
-            backgroundColor: "rgba(255,255,255,0.04)",
-            borderColor: tokens.colors.border,
-            borderWidth: 1,
-            borderRadius: tokens.radius.md,
-            paddingHorizontal: tokens.spacing.md,
-            paddingVertical: tokens.spacing.sm,
             color: tokens.colors.text,
-            fontFamily: tokens.typography.family.base,
-            fontSize: tokens.typography.size.md,
+            backgroundColor: tokens.colors.bg,
+            borderRadius: tokens.radius.md,
+            padding: tokens.spacing.md,
+            borderWidth: 1,
+            borderColor: hasError && !question ? "red" : tokens.colors.border,
           }}
         />
       </View>
 
-      <View style={{ gap: tokens.spacing.xs }}>
-        <Text
-          style={{
-            color: tokens.colors.muted,
-            fontFamily: tokens.typography.family.base,
-            fontSize: tokens.typography.size.sm,
-          }}
-        >
+      {/* Answer */}
+      <View>
+        <Text style={{ color: tokens.colors.muted, marginBottom: 6 }}>
           Answer
         </Text>
-
         <TextInput
           value={answer}
           onChangeText={setAnswer}
-          placeholder="Type the answer..."
+          placeholder="Type the answer"
           placeholderTextColor={tokens.colors.muted}
           multiline
           style={{
-            backgroundColor: "rgba(255,255,255,0.04)",
-            borderColor: tokens.colors.border,
-            borderWidth: 1,
-            borderRadius: tokens.radius.md,
-            paddingHorizontal: tokens.spacing.md,
-            paddingVertical: tokens.spacing.sm,
-            minHeight: 120,
-            textAlignVertical: "top",
             color: tokens.colors.text,
-            fontFamily: tokens.typography.family.base,
-            fontSize: tokens.typography.size.md,
+            backgroundColor: tokens.colors.bg,
+            borderRadius: tokens.radius.md,
+            padding: tokens.spacing.md,
+            minHeight: 100,
+            borderWidth: 1,
+            borderColor: hasError && !answer ? "red" : tokens.colors.border,
           }}
         />
       </View>
 
-      {/* Placeholder (sem função por enquanto) */}
-      <Pressable
-        onPress={() => {}}
+      {/* Save button */}
+      <TouchableOpacity
+        onPress={handleSubmit}
         style={{
-          borderColor: tokens.colors.border,
-          borderWidth: 1,
-          borderStyle: "dashed",
-          borderRadius: tokens.radius.md,
+          marginTop: tokens.spacing.sm,
+          backgroundColor: tokens.colors.primary,
           padding: tokens.spacing.md,
+          borderRadius: tokens.radius.md,
+          alignItems: "center",
         }}
       >
         <Text
           style={{
-            color: tokens.colors.muted,
-            fontFamily: tokens.typography.family.base,
+            color: "#fff",
             fontSize: tokens.typography.size.md,
-            textAlign: "center",
-          }}
-        >
-          + Add image (later)
-        </Text>
-      </Pressable>
-
-      <Pressable
-        onPress={handleSave}
-        disabled={!canSave}
-        style={({ pressed }) => ({
-          backgroundColor: canSave
-            ? tokens.colors.primary
-            : "rgba(139, 92, 246, 0.35)",
-          borderRadius: tokens.radius.lg,
-          paddingVertical: tokens.spacing.md,
-          paddingHorizontal: tokens.spacing.lg,
-          opacity: pressed ? 0.9 : 1,
-        })}
-      >
-        <Text
-          style={{
-            color: "#FFFFFF",
-            fontFamily: tokens.typography.family.base,
-            fontSize: tokens.typography.size.md,
-            textAlign: "center",
           }}
         >
           Save Flashcard
         </Text>
-      </Pressable>
-
-      {!canSave ? (
-        <Text
-          style={{
-            color: tokens.colors.muted,
-            fontFamily: tokens.typography.family.base,
-            fontSize: tokens.typography.size.sm,
-            textAlign: "center",
-          }}
-        >
-          Fill in both fields to enable saving.
-        </Text>
-      ) : null}
+      </TouchableOpacity>
     </View>
   );
 }

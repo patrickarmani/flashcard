@@ -1,13 +1,33 @@
 import { FlashcardViewer } from "@/components/flashcards/FlashcardViewer";
-import { mockFlashcards } from "@/constants/data/mockFlashcards";
+// import { mockFlashcards } from "@/constants/data/mockFlashcards";
+import { useFlashcards } from "@/state/flashcards-context";
+
 import { tokens } from "@/constants/designTokens";
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 export default function HomeScreen() {
+  const { flashcards } = useFlashcards();
+
   const [showBack, setShowBack] = useState(false);
 
-  const card = mockFlashcards[0];
+  if (flashcards.length === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: tokens.colors.bg,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ color: tokens.colors.muted }}>
+          No flashcards yet. Add your first one!
+        </Text>
+      </View>
+    );
+  }
+  const card = flashcards[0];
 
   return (
     <View
