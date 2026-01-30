@@ -1,6 +1,7 @@
 import { FlashcardForm } from "@/components/flashcards/FlashcardForm";
 import { tokens } from "@/constants/designTokens";
 import { useFlashcards } from "@/state/flashcards-context";
+import { router } from "expo-router";
 import React from "react";
 import { Alert, SafeAreaView, ScrollView, Text, View } from "react-native";
 
@@ -14,7 +15,9 @@ export default function AddScreen() {
   }) {
     // For now, we've only confirmed (without saving to storage).
     addFlashcard(payload);
-    Alert.alert("Saved ✅", "Flashcard added!");
+    Alert.alert("Saved ✅", "Flashcard added!", [
+      { text: "OK", onPress: () => router.replace("/(tabs)") },
+    ]);
   }
 
   return (
