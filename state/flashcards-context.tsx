@@ -1,6 +1,13 @@
 import { mockFlashcards } from "@/constants/data/mockFlashcards";
 import { Flashcard } from "@/constants/types/flashcard";
-import React, { createContext, useContext, useMemo, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 type AddFlashcardInput = {
   question: string;
@@ -12,6 +19,7 @@ type FlashcardsContextValue = {
   flashcards: Flashcard[];
   addFlashcard: (input: AddFlashcardInput) => void;
 };
+const STORAGE_KEY = "flashcards.v1";
 
 const FlashcardsContext = createContext<FlashcardsContextValue | null>(null);
 
@@ -25,6 +33,41 @@ export function FlashcardsProvider({
   children: React.ReactNode;
 }) {
   const [flashcards, setFlashcards] = useState<Flashcard[]>(mockFlashcards);
+  const [hydrated, setHydrated] = useState(false);
+
+  // 1) Carregar do AsyncStorage quando o app iniciar
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as Flashcard[];
+          setFlashcards(parsed);
+        } else {
+          // primeira execução: usa mockFlashcards
+          setFlashcards(mockFlashcards);
+        }
+      } catch (err) {
+        console.warn("Failed to load flashcards:", err);
+        setFlashcards(mockFlashcards);
+      } finally {
+        setHydrated(true);
+      }
+    })();
+  }, []);
+
+  // 2) Salvar toda vez que a lista mudar (depois que já carregou)
+  useEffect(() => {
+    if (!hydrated) return;
+
+    (async () => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(flashcards));
+      } catch (err) {
+        console.warn("Failed to save flashcards:", err);
+      }
+    })();
+  }, [flashcards, hydrated]);
 
   function addFlashcard(input: AddFlashcardInput) {
     const now = new Date().toISOString();
