@@ -28,10 +28,32 @@ export default function HomeScreen() {
       </View>
     );
   }
-  // const card = flashcards[0];
+
   const selectedCard =
     flashcards.find((c) => c.id === selectedId) ?? flashcards[0];
+
   const hasAnswer = !!selectedCard.backText?.trim();
+
+  // ✅ Progress info
+  const total = flashcards.length;
+  const selectedIndex = Math.max(
+    0,
+    flashcards.findIndex((c) => c.id === selectedCard.id),
+  );
+
+  function goPrev() {
+    if (total === 0) return;
+    const prevIndex = (selectedIndex - 1 + total) % total;
+    setSelectedId(flashcards[prevIndex].id);
+    setShowBack(false);
+  }
+
+  function goNext() {
+    if (total === 0) return;
+    const nextIndex = (selectedIndex + 1) % total;
+    setSelectedId(flashcards[nextIndex].id);
+    setShowBack(false);
+  }
 
   return (
     <View
@@ -42,26 +64,80 @@ export default function HomeScreen() {
         gap: tokens.spacing.lg,
       }}
     >
-      <Text
-        style={{
-          color: tokens.colors.text,
-          fontSize: tokens.typography.size.xl,
-        }}
-      >
-        Flashcard
-      </Text>
+      <View style={{ gap: tokens.spacing.xs }}>
+        <Text
+          style={{
+            color: tokens.colors.text,
+            fontSize: tokens.typography.size.xl,
+          }}
+        >
+          Flashcard
+        </Text>
+
+        <Text style={{ color: tokens.colors.muted }}>
+          {selectedIndex + 1}/{total}
+        </Text>
+      </View>
 
       <FlashcardList
         data={flashcards}
         selectedId={selectedCard.id}
         onSelect={(id) => {
           setSelectedId(id);
-          setShowBack(false); // It always comes back to the question.
+          setShowBack(false); // always back to question
         }}
       />
 
       <FlashcardViewer card={selectedCard} showBack={showBack} />
 
+      {/* ✅ Prev/Next controls */}
+      <View style={{ flexDirection: "row", gap: tokens.spacing.sm }}>
+        <Pressable
+          onPress={goPrev}
+          style={{
+            flex: 1,
+            backgroundColor: tokens.colors.surface,
+            borderWidth: 1,
+            borderColor: tokens.colors.border,
+            padding: tokens.spacing.md,
+            borderRadius: tokens.radius.md,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: tokens.colors.text,
+              fontSize: tokens.typography.size.md,
+            }}
+          >
+            Prev
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={goNext}
+          style={{
+            flex: 1,
+            backgroundColor: tokens.colors.surface,
+            borderWidth: 1,
+            borderColor: tokens.colors.border,
+            padding: tokens.spacing.md,
+            borderRadius: tokens.radius.md,
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: tokens.colors.text,
+              fontSize: tokens.typography.size.md,
+            }}
+          >
+            Next
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* ✅ Flip */}
       <Pressable
         disabled={!hasAnswer}
         onPress={() => setShowBack((v) => !v)}
