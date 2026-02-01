@@ -18,7 +18,10 @@ type AddFlashcardInput = {
 type FlashcardsContextValue = {
   flashcards: Flashcard[];
   addFlashcard: (input: AddFlashcardInput) => void;
+  deleteFlashcard: (id: string) => void;
+  updateFlashcard: (id: string, input: AddFlashcardInput) => void;
 };
+
 const STORAGE_KEY = "flashcards.v1";
 
 const FlashcardsContext = createContext<FlashcardsContextValue | null>(null);
@@ -35,7 +38,7 @@ export function FlashcardsProvider({
   const [flashcards, setFlashcards] = useState<Flashcard[]>(mockFlashcards);
   const [hydrated, setHydrated] = useState(false);
 
-  // 1) Carregar do AsyncStorage quando o app iniciar
+  // 1) Load from AsyncStorage when app starts
   useEffect(() => {
     (async () => {
       try {
@@ -44,7 +47,6 @@ export function FlashcardsProvider({
           const parsed = JSON.parse(raw) as Flashcard[];
           setFlashcards(parsed);
         } else {
-          // primeira execução: usa mockFlashcards
           setFlashcards(mockFlashcards);
         }
       } catch (err) {
@@ -56,7 +58,7 @@ export function FlashcardsProvider({
     })();
   }, []);
 
-  // 2) Salvar toda vez que a lista mudar (depois que já carregou)
+  // 2) Save whenever the list changes (after hydration)
   useEffect(() => {
     if (!hydrated) return;
 
@@ -69,12 +71,19 @@ export function FlashcardsProvider({
     })();
   }, [flashcards, hydrated]);
 
+  // ✅ CREATE
   function addFlashcard(input: AddFlashcardInput) {
+    const q = input.question.trim();
+    const a = input.answer.trim();
+
+    // ✅ Safety guard: do not save empty fields
+    if (!q || !a) return;
+
     const now = new Date().toISOString();
     const newCard: Flashcard = {
       id: makeId(),
-      frontText: input.question,
-      backText: input.answer,
+      frontText: q,
+      backText: a,
       backImageUri: input.imageUri ?? undefined,
       createdAt: now,
       updatedAt: now,
@@ -83,7 +92,40 @@ export function FlashcardsProvider({
     setFlashcards((prev) => [newCard, ...prev]);
   }
 
-  const value = useMemo(() => ({ flashcards, addFlashcard }), [flashcards]);
+  // ✅ DELETE
+  function deleteFlashcard(id: string) {
+    setFlashcards((prev) => prev.filter((c) => c.id !== id));
+  }
+
+  // ✅ UPDATE
+  function updateFlashcard(id: string, input: AddFlashcardInput) {
+    const q = input.question.trim();
+    const a = input.answer.trim();
+
+    // ✅ Safety guard: do not update with empty fields
+    if (!q || !a) return;
+
+    const now = new Date().toISOString();
+
+    setFlashcards((prev) =>
+      prev.map((c) =>
+        c.id === id
+          ? {
+              ...c,
+              frontText: q,
+              backText: a,
+              backImageUri: input.imageUri ?? undefined,
+              updatedAt: now,
+            }
+          : c,
+      ),
+    );
+  }
+
+  const value = useMemo(
+    () => ({ flashcards, addFlashcard, deleteFlashcard, updateFlashcard }),
+    [flashcards],
+  );
 
   return (
     <FlashcardsContext.Provider value={value}>
