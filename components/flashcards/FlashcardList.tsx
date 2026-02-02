@@ -11,12 +11,11 @@ type Props = {
 
 export function FlashcardList({ data, selectedId, onSelect }: Props) {
   return (
-    <View>
-      <Text
-        style={{ color: tokens.colors.muted, marginBottom: tokens.spacing.sm }}
-      >
-        Your flashcards
-      </Text>
+    <View style={{ gap: tokens.spacing.sm }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <Text style={{ color: tokens.colors.muted }}>Your flashcards</Text>
+        <Text style={{ color: tokens.colors.muted }}>{data.length}</Text>
+      </View>
 
       <FlatList
         data={data}
@@ -29,21 +28,41 @@ export function FlashcardList({ data, selectedId, onSelect }: Props) {
 
           return (
             <Pressable
-              hitSlop={10}
               onPress={() => onSelect(item.id)}
               style={{
                 backgroundColor: tokens.colors.surface,
-                borderRadius: tokens.radius.md,
+                borderRadius: tokens.radius.lg,
                 paddingVertical: tokens.spacing.sm,
                 paddingHorizontal: tokens.spacing.md,
                 borderWidth: 1,
                 borderColor: isSelected
-                  ? tokens.colors.primary
+                  ? "rgba(139,92,246,0.65)"
                   : tokens.colors.border,
-                opacity: isSelected ? 1 : 0.85,
-                minWidth: 140,
+
+                // soft elevation
+                shadowColor: "#000",
+                shadowOpacity: isSelected ? 0.35 : 0.2,
+                shadowRadius: isSelected ? 10 : 6,
+                shadowOffset: { width: 0, height: 6 },
+                elevation: isSelected ? 8 : 4,
+
+                minWidth: 170,
+                opacity: isSelected ? 1 : 0.88,
               }}
             >
+              {/* little accent dot */}
+              <View
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 999,
+                  backgroundColor: isSelected
+                    ? tokens.colors.primary
+                    : "rgba(255,255,255,0.18)",
+                  marginBottom: 8,
+                }}
+              />
+
               <Text
                 numberOfLines={1}
                 style={{
@@ -60,7 +79,7 @@ export function FlashcardList({ data, selectedId, onSelect }: Props) {
                 style={{
                   color: isSelected ? tokens.colors.text : tokens.colors.muted,
                   fontSize: tokens.typography.size.sm,
-                  marginTop: 2,
+                  marginTop: 4,
                 }}
               >
                 {isSelected ? "Selected" : "Tap to select"}
