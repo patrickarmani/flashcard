@@ -1,50 +1,45 @@
-# Welcome to your Expo app 👋
+# Overview
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+==Flashcard Project==
 
-## Get started
+This project is a Flashcard Study Mobile Application developed using React Native with Expo.
+The app allows users to create, study, and manage flashcards, supporting text, images, animations, and local persistence.
 
-1. Install dependencies
+**Description of the software**
 
-   ```bash
-   npm install
-   ```
+The goal is to create an application that helps the user study various subjects using sets of user-generated flashcards. The application should be able to store data on the phone and access information from the device, such as adding an image to the answer card. It should display the number of cards created and highlight the answer card when it is activated.
 
-2. Start the app
+**The purpose**
 
-   ```bash
-   npx expo start
-   ```
+Basically this app have two purpose:
 
-In the output, you'll find options to open the app in a
+1. Learn and become familiar with the React Native framework.
+2. Develop creative skills
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**Software Demmo link**
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+https:
 
-## Get a fresh project
+# Development Environment
 
-When you're ready, run:
+IDE: VS Code
 
-```bash
-npm run reset-project
-```
+Framework: React Native
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Expo
 
-## Learn more
+Emulator Android Studio.
 
-To learn more about developing your project with Expo, look at the following resources:
+# Useful Websites
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- [React Native doc ] (https://reactnative.dev/docs/getting-started)
+- [React Native Course for Beginners in 2025 | Build a Full Stack React Native App] (https://www.youtube.com/watch?v=f8Z9JyB2EIE)
 
-## Join the community
+# Future Work
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Edit flashcards
+- Delete flashcards with confirmation
+- Random study mode
+- Spaced repetition
+- Cloud sync
+- Authentication

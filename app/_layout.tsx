@@ -1,6 +1,5 @@
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-
 import {
   DarkTheme,
   DefaultTheme,
@@ -11,14 +10,9 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
-
 import { FlashcardsProvider } from "@/state/flashcards-context";
 import { Inter_400Regular, Inter_600SemiBold } from "@expo-google-fonts/inter";
 import { useFonts } from "expo-font";
-
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -34,13 +28,20 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <FlashcardsProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: false }}>
+            {/* ✅ Welcome será a primeira tela */}
+            <Stack.Screen name="index" />
+
+            {/* ✅ suas tabs continuam existindo */}
+            <Stack.Screen name="(tabs)" />
+
+            {/* ✅ modal continua */}
             <Stack.Screen
               name="modal"
               options={{ presentation: "modal", title: "Modal" }}
             />
           </Stack>
+
           <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
         </FlashcardsProvider>
       </ThemeProvider>
